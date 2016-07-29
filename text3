@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>轮播图</title>
+	<meta charset="utf-8">
+	<style type="text/css">
+		*{
+			margin:0;
+			padding: 0;
+		}
+		ul{
+			list-style: none;
+		}
+		#con{
+			width:520px;
+			height:280px;
+			margin:200px auto;
+			position: relative;
+		}
+		#mask{
+			width: 520px;
+			height: 280px;
+			text-align: center;
+			line-height: 280px;
+			position: absolute;
+			left: 0;
+			top: 0;
+			background: gray;
+
+		}
+		#con ul{
+			position: absolute;
+			right: 10px;
+			bottom: 10px;
+		}
+		#con ul li{
+			float: left;
+			width: 20px;
+			height: 20px;
+			margin-right: 2px;
+			cursor: pointer;
+			text-align: center;
+			line-height: 20px;
+		}
+		#prev, #next{
+			width: 20px;
+			height: 20px;
+			display: inline-block;
+			margin-right: 2px;
+			cursor: pointer;
+		}
+		#btn{
+			width: 60px;
+			position: absolute;
+			left: 10px;
+			bottom: 10px;
+		}
+	</style>
+</head>
+<body>
+	<div id="con">
+		<div id="mask">加载中。。。</div> 
+		<div id="imgs"></div>
+		<ul id="tab"></ul>
+		<div id="btn">
+			<span id="prev">&lt;</span>
+			<span id="next">&gt;</span>
+		</div>
+	</div>
+
+	<script type="text/javascript">
+	var oCon = getElemById('con');
+	var oMask = getElemById('mask');
+	var oTab = getElemById('tab');
+	var oImgs = getElemById('imgs');
+	var oPrev = getElemById('prev');
+	var oNext = getElemById('next');
+	var aImg = getElemsByTagName(oImgs,'img');
+	var aLi = getElemsByTagName(oTab,'li');
+	var nowIdx = 0;
+	var imgNum = 4;
+	var count = 0;
+	for(var i=0; i<imgNum; i++){
+		var oImg = new Image();
+		var oLi =document.createElement('li');
+		oLi.innerHTML = i+1; 
+		oImg.onload = function(){
+			count++;
+			if(count == imgNum){	
+				success();
+			}
+		}
+		oImg.src =(i+1)+'.jpg';
+		oImgs.appendChild(oImg);
+		oTab.appendChild(oLi);
+	}
+	function success(){
+		oCon.removeChild(oMask);
+		changeImg(nowIdx);
+		for(var i=0; i<aLi.length; i++){
+			aLi[i].index = i;
+			aLi[i].onmouseover = function(){
+		 		changeImg(this.index);
+			}
+		}
+		oPrev.onclick = oNext.onclick = function(){
+			if(this == oPrev){
+				nowIdx--;
+				if(nowIdx == -1){
+					nowIdx = imgNum - 1;
+				}
+			}else{
+				nowIdx++;
+				if (nowIdx == 4) {
+					nowIdx = 0;
+				}
+
+			}
+			changeImg(nowIdx);
+		}
+		var timer = setInterval(function(){
+			oNext.onclick();
+		},1000);
+		oCon.onmouseover = function(){
+			clearInterval(timer);
+		};
+		oCon.onmouseout = function(){
+			clearInterval(timer);
+			timer = setInterval(function(){
+				oNext.onclick();
+			},1000);
+		};
+	}		
+	function changeImg(idx){
+		nowIdx = idx;
+		for(var i=0; i<aLi.length; i++){
+			aLi[i].style.background = '#ccc';
+			aImg[i].style.display = 'none';
+		}
+		console.log(nowIdx);
+		aLi[nowIdx].style.background = 'orange';
+		aImg[nowIdx].style.display = 'block';
+	}
+
+
+	function getElemById(id){
+		return document.getElementById(id);
+	}
+	function getElemsByTagName(obj,tag){
+		return obj.getElementsByTagName(tag);
+	}
+	</script>
+
+</body>
+</html>
