@@ -1,0 +1,131 @@
+(function(){
+	var oBigImg = id('big-img');
+	var aImgs = tag('img', oBigImg);
+	var oLeft = id('left');
+	var oRight = id('right');
+	var nowIdx = 0;
+	var zIndex = 9;
+	var oInfo = id('info');
+	var oCurrPage = id('curr-page');
+	var oSmallImg = id('small-img');
+	var aSmallImgs = tag('img', oSmallImg);
+	var oContainer = id('container');
+	oLeft.onmouseover = oRight.onmouseover = function(){
+		animate(this, {opacity : 100});
+	};
+	oLeft.onmouseout = oRight.onmouseout = function(){
+		animate(this, {opacity : 0});
+	};
+
+	oLeft.onclick = oRight.onclick = function(){
+		if(this == oRight){
+			nowIdx++;
+			if(nowIdx == aImgs.length){
+				nowIdx = 0;
+			}
+		}else{
+			nowIdx--;
+			if(nowIdx == -1){
+				nowIdx = aImgs.length - 1;
+			}
+		}
+		changeImg(nowIdx);
+	};
+
+	for(var i=0; i<aSmallImgs.length; i++){
+		aSmallImgs[i].index = i;
+		aSmallImgs[i].style.opacity = 0.3;
+		aSmallImgs[i].style.filter = 'alpha(opacity=30)';
+
+		aSmallImgs[i].onmouseover = function(){
+			animate(this, {opacity : 100});
+		};
+		aSmallImgs[i].onmouseout = function(){
+			if(this.index != nowIdx){
+				animate(this, {opacity : 30});
+			}
+		};
+		aSmallImgs[i].onclick = function(){
+			if(this.index == nowIdx){
+				return;
+			}
+			for(var j=0; j<aSmallImgs.length; j++){
+				aSmallImgs[j].style.opacity = 0.3;
+				aSmallImgs[j].style.filter = 'alpha(opacity=30)';
+			}
+			this.style.opacity = 1;
+			this.style.filter = 'alpha(opacity=100)';
+			changeImg(this.index);
+		};
+	}
+	aSmallImgs[nowIdx].style.opacity = 1;
+	aSmallImgs[nowIdx].style.filter = 'alpha(opacity=100)';
+
+	var timer = setInterval(function(){
+		oRight.onclick();
+	}, 1000);
+	oContainer.onmouseover = function(){
+		clearInterval(timer);
+	};
+	oContainer.onmouseout = function(){
+		timer = setInterval(function(){
+			oRight.onclick();
+		}, 1000);
+	};
+
+
+	function changeImg(idx){
+		nowIdx = idx;
+		aImgs[nowIdx].style.opacity = 0;
+		aImgs[nowIdx].style.zIndex = zIndex++;
+		oLeft.style.zIndex = zIndex++;
+		oRight.style.zIndex = zIndex++;
+		oInfo.style.zIndex = zIndex++;
+		oCurrPage.innerHTML = nowIdx + 1;
+		animate(aImgs[nowIdx], {opacity:100});
+
+		var iLeft = 0;
+		if(nowIdx == 0 || nowIdx == 1){
+			iLeft = 0;
+		}else if(nowIdx == aSmallImgs.length - 1 || nowIdx == aSmallImgs.length - 2){
+			iLeft = aSmallImgs.length / 2;
+		}else{
+			iLeft = nowIdx - 1;
+		}
+		animate(oSmallImg, {left: -iLeft * aSmallImgs[0].offsetWidth});
+
+		for(var j=0; j<aSmallImgs.length; j++){
+			aSmallImgs[j].style.opacity = 0.3;
+			aSmallImgs[j].style.filter = 'alpha(opacity=30)';
+		}
+		aSmallImgs[nowIdx].style.opacity = 1;
+		aSmallImgs[nowIdx].style.filter = 'alpha(opacity=100)';
+		
+	}
+
+})();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
